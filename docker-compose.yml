@@ -1,0 +1,43 @@
+version: "3.8"
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "product_schema"
+      MYSQL_USER: "saisiva"
+      MYSQL_PASSWORD: "saisiva"
+
+  postgresql:
+    image: postgres:latest
+    container_name: postgresql
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: "root"
+      POSTGRES_DB: "product_db"
+
+  spring-mysql-docker:
+    image: spring-mysql-docker
+    container_name: spring-data-jpa
+    ports:
+      - "8080:8080"
+    depends_on:
+      - "mysql"
+      - "postgresql"
+    links:
+      - mysql
+      - postgresql
+    entrypoint: ["java", "-jar", "-Dspring.profiles.active=${PROFILE}", "/spring-mysql-docker-1.0.0.jar"]
+#    This entrypoint will override the entrypoint of Dockerfile
+
+
+#docker run -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=product_schema -e MYSQL_USER=saisiva -e MYSQL_PASSWORD=saisiva -p 3306:3306 --name mysql -d mysql:latest
+#docker build . -t spring-mysql-docker
+#docker run -d -p 8080:8080 --name spring-mysql --link db_stackspace:db_stackspace spring-mysql-docker
+
+############## POSTGRES Commands Cheatsheet #######################
+# https://gist.github.com/Kartones/dd3ff5ec5ea238d4c546
